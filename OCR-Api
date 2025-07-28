@@ -1,0 +1,37 @@
+# No extra installations needed, just import libraries
+import requests
+import json
+from google.colab import files
+# Upload an image file
+uploaded = files.upload()
+
+# Get the filename of the uploaded image
+image_filename = list(uploaded.keys())[0]
+# Replace 'your_api_key_here' with your actual API key from https://ocr.space/ocrapi
+api_key = 'your_api_key_here'
+
+# OCR.space API endpoint
+url_api = 'https://api.ocr.space/parse/image'
+
+# Read the image in binary format
+with open(image_filename, 'rb') as f:
+    response = requests.post(
+        url_api,
+        files={image_filename: f},
+        data={
+            'apikey': api_key,
+            'language': 'eng',  # or 'spa' for Spanish, 'deu' for German, etc.
+        }
+    )
+
+# Parse and print result
+result = response.content.decode()
+result_json = json.loads(result)
+
+# Show full JSON response (optional)
+# print(json.dumps(result_json, indent=4))
+
+# Extracted text
+extracted_text = result_json['ParsedResults'][0]['ParsedText']
+print("📝 Extracted Text:\n")
+print(extracted_text)
